@@ -1,0 +1,8 @@
+src/xcdbus-head.h.in
+src/xcdbus-tail.h
+src/prototypes.h
+src/ext_prototypes.h
+src/xcdbus.c
+src/version.c
+src/project.h
+src/util.c

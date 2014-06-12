@@ -1,0 +1,124 @@
+dnl
+dnl
+dnl configure.in:
+dnl
+dnl Copyright (c) 2010 James McKenzie <20@madingley.org>,
+dnl All rights reserved.
+dnl
+dnl $Id:$
+dnl
+dnl $Log:$
+dnl
+dnl
+dnl
+AC_PREREQ(2.13)
+AC_INIT(src/xcdbus.c)
+
+AC_PROG_CC
+AC_SYS_LARGEFILE
+
+LIBXCDBUS_MAJOR_VERSION=`cat $srcdir/version-major`
+LIBXCDBUS_MINOR_VERSION=`cat $srcdir/version-minor`
+LIBXCDBUS_MICRO_VERSION=`cat $srcdir/version-micro`
+
+
+
+LIBXCDBUS_INTERFACE_VERSION_MIN=$LIBXCDBUS_MINOR_VERSION
+LIBXCDBUS_INTERFACE_VERSION_MAX=$LIBXCDBUS_MINOR_VERSION
+LIBXCDBUS_INTERFACE_REVISION=1
+
+LIBXCDBUS_VERSION=$LIBXCDBUS_MAJOR_VERSION.$LIBXCDBUS_MINOR_VERSION.$LIBXCDBUS_MICRO_VERSION
+
+AC_SUBST(LIBXCDBUS_MAJOR_VERSION)
+AC_SUBST(LIBXCDBUS_MINOR_VERSION)
+AC_SUBST(LIBXCDBUS_MICRO_VERSION)
+AC_SUBST(LIBXCDBUS_VERSION)
+
+AC_SUBST(LIBXCDBUS_INTERFACE_VERSION_MIN)
+AC_SUBST(LIBXCDBUS_INTERFACE_VERSION_MAX)
+AC_SUBST(LIBXCDBUS_INTERFACE_REVISION)
+
+
+LT_RELEASE=$LIBXCDBUS_MAJOR_VERSION.$LIBXCDBUS_MINOR_VERSION
+LT_CURRENT=$LIBXCDBUS_INTERFACE_VERSION_MAX
+LT_REVISION=$LIBXCDBUS_MICRO_VERSION
+LT_AGE=`expr $LIBXCDBUS_INTERFACE_VERSION_MAX - $LIBXCDBUS_INTERFACE_VERSION_MIN`
+
+AC_SUBST(LT_RELEASE)
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+
+VERSION=$LIBXCDBUS_VERSION
+PACKAGE=libxcdbus
+
+AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
+
+AM_PROG_LIBTOOL
+AM_PROG_CC_C_O
+
+AM_CONFIG_HEADER(src/config.h)
+
+AC_CHECK_PROG(MD5SUM,md5sum,md5sum)
+AC_CHECK_PROG(GREP,grep,grep)
+AC_CHECK_PROG(SED,sed,sed)
+AC_PROG_AWK
+
+dnl AC_DEFINE_UNQUOTED(LIBXCDBUS_MAJOR_VERSION, $LIBXCDBUS_MAJOR_VERSION)
+dnl AC_DEFINE_UNQUOTED(LIBXCDBUS_MINOR_VERSION, $LIBXCDBUS_MINOR_VERSION)
+dnl AC_DEFINE_UNQUOTED(LIBXCDBUS_MICRO_VERSION, $LIBXCDBUS_MICRO_VERSION)
+
+AC_CHECK_HEADERS(fcntl.h malloc.h sys/ioctl.h unistd.h)
+AC_CHECK_HEADERS(sys/scsi/impl/uscsi.h scsi/sg.h stdint.h)
+AC_CHECK_HEADERS(sys/int_types.h string.h strings.h)
+AC_CHECK_HEADERS(dirent.h sys/stat.h)
+
+AC_C_INLINE
+AC_C_CONST
+AC_HEADER_TIME
+AC_STRUCT_TM
+AC_CHECK_FUNCS(select strdup strstr)
+
+PKG_CHECK_MODULES([DBUS],[dbus-1])
+PKG_CHECK_MODULES([DBUS_GLIB],[dbus-glib-1])
+
+I2_TM_H=$ac_cv_struct_tm
+
+I2_HAVE_STDINT_H=0
+I2_HAVE_SYS_INT_TYPES_H=0
+if test "$ac_cv_header_sys_int_types_h" = "yes"; then
+	I2_HAVE_SYS_INT_TYPES_H=1
+fi
+if test "$ac_cv_header_stdint_h" = "yes"; then
+	I2_HAVE_STDINT_H=1
+fi
+I2_HAVE_UNISTD_H=0
+if test "$ac_cv_header_unistd_h" = "yes"; then
+	I2_HAVE_UNISTD_H=1
+fi
+
+AC_SUBST(I2_TM_H)
+AC_SUBST(I2_HAVE_STDINT_H)
+AC_SUBST(I2_HAVE_SYS_INT_TYPES_H)
+AC_SUBST(I2_HAVE_UNISTD_H)
+
+AC_SEARCH_LIBS([event_init], [ev event],
+        AC_DEFINE([HAVE_LIBEVENT], [1],
+            [Define if you have libev or libevent]))
+
+AC_ARG_WITH(idldir,AC_HELP_STRING([--with-idldir=PATH],[Path to dbus idl desription files]),
+                IDLDIR=$with_idldir,IDLDIR=/usr/share/idl)
+AC_ARG_WITH(rpcgen-templates,AC_HELP_STRING([--with-rpcgen-templates=PATH],[Path to xc-rpcgen template files]),
+                RPCGEN_TEMPLATES=$with_rpcgen_templates,RPCGEN_TEMPLATES=)
+
+AC_SUBST(IDLDIR)
+AC_SUBST(RPCGEN_TEMPLATES)
+
+AC_CHECK_PROG(XC_RPCGEN,xc-rpcgen,xc-rpcgen)
+
+AC_OUTPUT([Makefile 
+	src/Makefile 
+	src/xcdbus-head.h
+	libxcdbus.pc.src
+	libxcdbus-config.src],[chmod +x libxcdbus-config.src])
+

@@ -1,0 +1,39 @@
+/* MAKE ABSOLUTELY SURE THAT YOU ARE EDITING THE xcdbus-head.h.in */
+/* FILE FROM WHICH THIS IS GENERATED - OTHERWISE YOUR EDITS */
+/* WILL BE LOST */
+
+#ifndef __XCDBUS_H__
+#define __XCDBUS_H__
+
+#ifdef __cplusplus
+extern "C" { 
+#endif
+
+#include <stdio.h>
+
+/*the integer constants here are set by configure*/
+
+/*get uint32_t and friends defined */
+#if @I2_HAVE_STDINT_H@
+#include <stdint.h>
+#elif @I2_HAVE_SYS_INT_TYPES_H@
+#include <sys/int_types.h>
+#endif
+#if @I2_HAVE_UNISTD_H@
+#include <unistd.h>
+#endif
+
+/* If the following is <> then configure failed to find where */
+/* struct tm was defined - report it as a bug */
+
+/*get struct tm defined*/
+#include <@I2_TM_H@>
+
+#include <dbus/dbus.h>
+#include <dbus/dbus-glib.h>
+#include <sys/select.h>
+
+struct xcdbus_conn;
+
+typedef struct xcdbus_conn xcdbus_conn_t;
+
