@@ -83,7 +83,7 @@ BUILT_SOURCES = version.h \
 
 
 rpcgen/%_client.h: ${IDLDIR}/%.xml
-	mkdir rpcgen || true
+	mkdir -p rpcgen
 	if [ .${RPCGEN_TEMPLATES} = . ]; then \
 		${XC_RPCGEN} -c -o rpcgen/ $<; \
 	else \
@@ -92,7 +92,7 @@ rpcgen/%_client.h: ${IDLDIR}/%.xml
 
 
 rpcgen/%_server_marshall.h rpcgen/%_server_obj.h rpcgen/%_server_obj.c : ${IDLDIR}/%.xml
-	mkdir rpcgen || true
+	mkdir -p rpcgen
 	if [ .${RPCGEN_TEMPLATES} = . ]; then \
 		${XC_RPCGEN} -s -o rpcgen/ $<; \
 	else \
